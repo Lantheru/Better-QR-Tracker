@@ -8,13 +8,10 @@ ___
 
 ### <ins>**Implemented**<ins>
 - Dedicated video stream scans and enqueues every read frame for detection of QR codes and relevant data
+- QR codes are read from each frame and decoded, updating a dictionary to store their data. When a code isn't read for a number of frames (note to implement actual timeout period later), it is deleted from the tracked QR codes.
+- Independent threads update each frame with tracking rectangles to visually indicate codes that are being followed and displaying them.
 
 
 
 ### <ins>**To Do**<ins>
-
-- QR detection and storage of relevant data.
-- Logic to track constant list of tracked QR codes, their data, and append relevant metadata for parsing in other programs
-- When codes have not been read from a frame for a fixed period of time, data for tracked QRs are dropped 
-- Return view of video updated with visual indicators of codes being tracked
-
+- Separate threads still need to by synced, likely attaching priorities to the frames so they are read in proper sequence. Drawing lines over each frame, per code, takes a considerable amount of time and needs to be optimized.
