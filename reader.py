@@ -3,6 +3,8 @@ import cv2 as cv
 import time
 import queue
 
+from cv2 import COLOR_BGR2GRAY
+
 
 #Runs dedicated thread for reading from capture and enqueues for further processing.
 
@@ -11,7 +13,7 @@ class Vidstream:
     def __init__(self, source=0):
         self.framecount = 0
         self.capture = cv.VideoCapture(source)
-        self.reader = Thread(target=self._update, args=(), daemon=True)
+        self.reader = Thread(target=self._update, args=())
         self.reader.start()
        
 
@@ -19,9 +21,10 @@ class Vidstream:
         while True:
             (self.status, self.frame) = self.capture.read()
             if self.status == True:
-                self.feed.put(self.frame)
                 self.framecount += 1
-                time.sleep(.01)
+                read_tuple = (self.framecount, self.frame, cv.cvtColor(self.frame, COLOR_BGR2GRAY))
+                self.feed.put(read_tuple)
+                time.sleep(.05)
             else:
                 print("Done reading video")
                 break
@@ -31,7 +34,7 @@ class Vidstream:
     def test(self):
         while True:
             try:
-                current = self.feed.get(block=True, timeout=2)
+                (count, current, gray) = self.feed.get(block=True, timeout=2)
                 cv.imshow('feed', current)
                 key = cv.waitKey(1)
                 if key == ord('q'):
